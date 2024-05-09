@@ -1,0 +1,39 @@
+version: '3'
+
+
+networks:
+ lfrnet:
+  driver: bridge
+
+services:
+
+ httpd:
+  image: httpd:2.4-alpine
+  container_name: httpd-proxy
+  restart: always
+  ports:
+   - "80:80"
+  volumes:
+   - ./apache-conf:/usr/local/apache2/conf
+  depends_on:
+   - liferay
+  networks:
+   lfrnet:
+    aliases:
+     - httpd-proxy
+
+ liferay:
+  image: liferay/portal:7.4.3.112-ga112
+  environment:
+   - LIFERAY_JVM_OPTS=-Xms3g -Xmx4g
+  container_name: dxp-1
+  restart: always
+  ports:
+   - "8080:8080"
+   - "11311:11311"
+   - "8000:8000"  
+  networks:
+   lfrnet:
+    aliases:
+     - dxp-1
+  
